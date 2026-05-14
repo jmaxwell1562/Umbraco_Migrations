@@ -258,6 +258,13 @@ body {
     padding: 1.5rem;
 }
 
+.run-duration-note {
+    margin-top: 0.75rem;
+    color: var(--gray-500);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
 .results-panel {
     padding: 1.6rem;
     min-height: 0;

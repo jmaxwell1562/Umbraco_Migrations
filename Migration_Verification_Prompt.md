@@ -76,7 +76,9 @@ Ensure dashboard is usable immediately and crash-safe:
 4. Run button behavior
    - Start Audit button must behave as a status button (Ready, Running, Complete, Error)
    - Show running indicator while audit is in progress
+   - Show a short notice that quick runs usually finish in a few minutes and full-site runs can take 10 to 30+ minutes before reports appear
    - Return to Ready after completion/failure state is shown
+   - Full-site dashboard runs must allow substantially longer than the old 10-minute limit so long audits are not aborted mid-run by the Flask wrapper
    - If audit preflight stops before report generation, show an error state and do not imply stale previous results are new output
 
 5. Recovery behavior
@@ -91,6 +93,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - Dashboard route loads
    - Form submission launches audit
    - Run button visibly changes state during lifecycle
+   - The UI shows a short duration notice for quick vs full runs
    - New Report and Previous Report render from history in the Generated Reports section
    - Generated Reports uses a single-row two-column layout on desktop, with a 33% Previous Report column, and stacks cleanly on mobile
    - The page shows the latest audit only for the current site and does not auto-load a different site on page load
@@ -99,6 +102,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - Test URL dropdown includes the predefined environments and successfully accepts localhost selections
    - Localhost browser checks ignore local HTTPS certificate errors while still requiring the localhost app to be reachable
    - If no report folder or report artifacts are generated, the dashboard returns an error instead of reusing stale results
+   - Full-site audits are not cut off by the previous 10-minute dashboard timeout when they are still producing output
    - Fix On Test Site section shows only the top 10 priority items
    - Summary counts, release readiness, and Queue B are not shown on the dashboard page
 

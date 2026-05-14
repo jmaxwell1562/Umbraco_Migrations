@@ -38,6 +38,7 @@ The dashboard provides:
 2. **Interactive Results Display**
    - Live progress bar during audit execution
    - Start Audit button behaves as a status button: Ready, Running, Complete, Error
+   - A short duration notice explains that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear
    - Preflight-stopped audits surface an error instead of implying stale results are new
    - Prioritized Queue A only, limited to top 10 fix-on-test priorities
    - Show only the latest audit for the current site in the form
@@ -161,10 +162,11 @@ WSU_ACCENT_COLOR = '#D4AF37'
 7. Do not auto-load a different site's report into the page on startup; keep the page focused on the current site in the form.
 8. Ensure report history lookup works even when the Site Name input and saved filenames differ by spaces, underscores, hyphens, or case.
 9. Ensure changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
-10. If the audit stops before generating a report folder or report artifacts, return an error instead of silently leaving stale report data in place.
-11. Ensure refreshed pages pick up new JS/CSS automatically and are not blocked by stale asset cache.
-12. Keep the dashboard result surface intentionally narrow: no summary counts, release readiness, or Queue B panels on the main page.
-13. Keep the Generated Reports layout intentional: a single-row two-column desktop layout using the labels New Report and Previous Report, with a narrower Previous Report column that collapses to one column on mobile.
+10. Ensure long full-site runs are not aborted by the old 10-minute dashboard timeout while they are still producing output.
+11. If the audit stops before generating a report folder or report artifacts, return an error instead of silently leaving stale report data in place.
+12. Ensure refreshed pages pick up new JS/CSS automatically and are not blocked by stale asset cache.
+13. Keep the dashboard result surface intentionally narrow: no summary counts, release readiness, or Queue B panels on the main page.
+14. Keep the Generated Reports layout intentional: a single-row two-column desktop layout using the labels New Report and Previous Report, with a narrower Previous Report column that collapses to one column on mobile.
 
 ### For Administrators
 

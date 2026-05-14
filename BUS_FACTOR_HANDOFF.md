@@ -35,6 +35,7 @@ The current UI is expected to behave as follows:
 12. The page stays focused on the current site in the form and does not show a Recent Sites browser.
 13. Report history lookup is tolerant of spaces, underscores, hyphens, and case differences between the Site Name field and saved report filenames.
 14. Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
+15. The UI includes a short duration note explaining that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
 
 ## Critical Files
 
@@ -182,6 +183,7 @@ The audit runner ignores local HTTPS certificate errors for localhost browser ch
 5. `app.py` copies `.csv`, `.html`, and `.xlsx` artifacts from that folder into `reports/`.
 6. The dashboard reads report history from `reports/` and matches site names tolerantly across spaces, underscores, hyphens, and case.
 7. HTML reports are served through `/reports/<filename>`.
+8. Full-site runs now have a longer dashboard-side wait window than the old 10-minute limit so they are less likely to be aborted mid-run.
 
 ## Report Files the Dashboard Expects
 
@@ -235,6 +237,7 @@ At minimum, back up:
 - Playwright requires Chromium installation separately.
 - The dashboard history view is driven by files copied into `reports/`, not only by the raw `Audit_*` folders.
 - The dashboard can reload the latest report for the current site when the Site Name field changes or loses focus; it does not auto-load a different site's report on page load.
+- Full-site runs can legitimately take 10 to 30+ minutes before final report artifacts appear.
 - The previous report card may have a placeholder state if there is no earlier run yet.
 - Route-based links are required for HTML reports; do not switch them to `file://` links.
 - If an audit stops during preflight and produces no report folder or artifacts, the dashboard should surface an error rather than silently reusing stale data.

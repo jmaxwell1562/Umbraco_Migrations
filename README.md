@@ -74,6 +74,8 @@ powershell -ExecutionPolicy Bypass -File .\bootstrap-dashboard.ps1 -SkipStart
 
 2. **Click "Start Audit"**
 
+   Full-site runs can take 10 to 30+ minutes before reports appear. Quick runs usually finish much sooner.
+
 3. **View Results:**
    - **Generated Reports** shown below the form in a single desktop row with two columns
    - **New Report**: latest HTML audit report, shown only after the new run completes
@@ -226,7 +228,7 @@ To add custom report parsing:
 
 - Use "Quick" run mode for faster validation
 - Set `TEST_ALLOWLIST` to limit scope
-- Increase timeout in `app.py` if needed (default: 600s)
+- The dashboard now allows longer waits for full runs than the old 10-minute limit, but very large sites may still take a substantial amount of time
 
 ### Port Already in Use
 

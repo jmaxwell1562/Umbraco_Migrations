@@ -19,6 +19,11 @@ CORS(app)
 app.config['DEBUG'] = DEBUG
 app.config['JSON_SORT_KEYS'] = False
 
+AUDIT_TIMEOUT_SECONDS = {
+    'quick': 900,
+    'full': 3600,
+}
+
 
 def _normalize_url(value):
     """Ensure dropdown host values are submitted as absolute URLs."""
@@ -174,13 +179,15 @@ def run_audit():
         
         if test_allowlist_file:
             cmd.extend(['--test_allowlist_file', test_allowlist_file])
+
+        audit_timeout = AUDIT_TIMEOUT_SECONDS.get(run_mode, AUDIT_TIMEOUT_SECONDS['full'])
         
         # Run audit
         result = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=600  # 10 minute timeout
+            timeout=audit_timeout,
         )
         
         if result.returncode != 0:
@@ -240,7 +247,11 @@ def run_audit():
         })
     
     except subprocess.TimeoutExpired:
-        return jsonify({'error': 'Audit run timed out after 10 minutes'}), 408
+        timeout_minutes = AUDIT_TIMEOUT_SECONDS.get(run_mode, AUDIT_TIMEOUT_SECONDS['full']) // 60
+        return jsonify({
+            'error': f'Audit run timed out after {timeout_minutes} minutes',
+            'details': 'Full-site audits can take substantially longer than quick runs. The run exceeded the dashboard wait window before final report artifacts were written.',
+        }), 408
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

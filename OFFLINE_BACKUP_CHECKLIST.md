@@ -82,9 +82,11 @@ Confirm:
 2. Prompt files reflect the current dashboard behavior.
 3. Backup docs mention that report lookup tolerates spaces, underscores, hyphens, and case differences in site names.
 4. Backup docs mention that changing or blurring the Site Name field reloads the current site's latest report without requiring a rerun.
-5. `requirements.txt` includes both dashboard and audit dependencies.
-6. `bootstrap-dashboard.ps1` exists.
-7. `BUS_FACTOR_HANDOFF.md` exists.
+5. Backup docs mention that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
+6. Backup docs mention that full-site runs now have a longer dashboard-side timeout than the old 10-minute limit.
+7. `requirements.txt` includes both dashboard and audit dependencies.
+8. `bootstrap-dashboard.ps1` exists.
+9. `BUS_FACTOR_HANDOFF.md` exists.
 
 ## After You Zip
 
