@@ -25,6 +25,27 @@ AUDIT_TIMEOUT_SECONDS = {
 }
 
 
+def _extract_folder_timestamp(folder_path):
+    """Extract YYYYMMDD_HHMMSS from an Audit_* folder name when present."""
+    folder_name = os.path.basename(os.path.normpath(folder_path or ''))
+    match = re.search(r'(\d{8}_\d{6})$', folder_name)
+    return match.group(1) if match else None
+
+
+def _published_report_filename(filename, folder_path):
+    """Preserve per-run timestamps in reports/ so same-day runs do not overwrite each other."""
+    run_timestamp = _extract_folder_timestamp(folder_path)
+    if not run_timestamp:
+        return filename
+
+    date_part, _, time_part = run_timestamp.partition('_')
+    if re.search(rf'_{re.escape(run_timestamp)}(?=\.[^.]+$)', filename):
+        return filename
+    if re.search(rf'_{re.escape(date_part)}(?=\.[^.]+$)', filename):
+        return re.sub(rf'_{re.escape(date_part)}(?=\.[^.]+$)', f'_{run_timestamp}', filename)
+    return re.sub(r'(\.[^.]+)$', f'_{time_part}\\1', filename)
+
+
 def _normalize_url(value):
     """Ensure dropdown host values are submitted as absolute URLs."""
     value = (value or '').strip()
@@ -236,7 +257,7 @@ def run_audit():
         if generated_folder and os.path.isdir(generated_folder):
             for filename in generated_artifacts:
                 src = os.path.join(generated_folder, filename)
-                dst = os.path.join(REPORTS_DIR, filename)
+                dst = os.path.join(REPORTS_DIR, _published_report_filename(filename, generated_folder))
                 shutil.copy2(src, dst)
         
         return jsonify({

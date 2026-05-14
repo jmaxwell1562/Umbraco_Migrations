@@ -34,6 +34,7 @@ Use this for a fast migration check with actionable output.
    - Previous Report should occupy about 33% width on desktop, with New Report taking the remaining width
    - New Report link (primary view) appears only after the new report is complete
    - Previous Report shows the prior report for the same site with brief improvement-vs-previous stats
+   - Published report files in reports/ must preserve per-run timestamps so multiple runs on the same day remain available as latest and previous history
    - Route-based report links (for example /reports/<filename>), not file:// links
    - Report history lookup must tolerate spaces, underscores, hyphens, and case differences between the Site Name input and saved report filenames
    - Keep post-run links hidden until run completion/report history exists
@@ -58,6 +59,7 @@ Use this for a fast migration check with actionable output.
    - Localhost browser checks ignore local HTTPS certificate errors while still requiring the localhost app to be reachable
    - New Report and Previous Report render from history
    - Generated HTML audit reports support clickable legend-pill filtering for detail and readiness rows
+   - Last completed run metadata includes the run time, not just the date
    - Existing reports for the current site can be reloaded even when report filenames use underscores or other separators
    - Generated Reports uses a single-row two-column layout on desktop and stacks on mobile
    - If no report folder or report artifacts are generated, the dashboard returns an error instead of reusing stale results

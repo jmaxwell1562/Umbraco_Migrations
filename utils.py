@@ -26,6 +26,24 @@ def _report_file_matches_site(file_name, site_name):
     return _canonical_site_key(file_site_name) == _canonical_site_key(site_name)
 
 
+def _extract_report_run_key(file_name):
+    """Extract YYYYMMDD or YYYYMMDD_HHMMSS from a report filename."""
+    match = re.search(r'(\d{8}(?:_\d{6})?)(?=\.[^.]+$)', file_name)
+    return match.group(1) if match else None
+
+
+def _parse_report_run_key(run_key):
+    """Parse a report run key into a datetime for sorting and display."""
+    if not run_key:
+        return None
+    for fmt in ('%Y%m%d_%H%M%S', '%Y%m%d'):
+        try:
+            return datetime.strptime(run_key, fmt)
+        except ValueError:
+            continue
+    return None
+
+
 def find_latest_report(reports_dir, site_name):
     """Find the latest generated report for a site."""
     if not os.path.exists(reports_dir):
@@ -37,7 +55,7 @@ def find_latest_report(reports_dir, site_name):
             files.append(file)
     
     if files:
-        files.sort(reverse=True)
+        files.sort(key=lambda file_name: _extract_report_run_key(file_name) or '', reverse=True)
         return files[0]
     return None
 
@@ -53,8 +71,10 @@ def find_report_files(reports_dir, site_name, date_str=None):
         if not _report_file_matches_site(file, site_name):
             continue
         
-        if date_str and date_str not in file:
-            continue
+        if date_str:
+            run_key = _extract_report_run_key(file)
+            if run_key != date_str:
+                continue
         
         full_path = os.path.join(reports_dir, file)
         
@@ -178,33 +198,35 @@ def get_report_history(reports_dir, site_name, limit=5):
     if not os.path.exists(reports_dir):
         return []
     
-    reports = []
+    reports = {}
     
     for file in os.listdir(reports_dir):
         if not _report_file_matches_site(file, site_name) or '_audit_report_' not in file or not file.endswith('.csv'):
             continue
         
-        try:
-            # Extract YYYYMMDD from names like site_audit_report_YYYYMMDD.csv
-            match = re.search(r'(\d{8})(?=\.[^.]+$)', file)
-            if not match:
-                continue
+        run_key = _extract_report_run_key(file)
+        date_obj = _parse_report_run_key(run_key)
+        if not run_key or not date_obj:
+            continue
 
-            date_str = match.group(1)
-            date_obj = datetime.strptime(date_str, '%Y%m%d')
-            reports.append({
-                'date': date_str,
-                'display_date': date_obj.strftime('%Y-%m-%d'),
-                'file': file,
-                'path': os.path.join(reports_dir, file),
-            })
-        except (ValueError, IndexError):
-            pass
+        report_entry = reports.setdefault(run_key, {
+            'date': run_key,
+            'display_date': date_obj.strftime('%Y-%m-%d %I:%M:%S %p') if '_' in run_key else date_obj.strftime('%Y-%m-%d'),
+            'file': file,
+            'path': os.path.join(reports_dir, file),
+            'timestamp': date_obj,
+        })
+
+        if '_audit_report_' in file and file.endswith('.html'):
+            report_entry['file'] = file
+            report_entry['path'] = os.path.join(reports_dir, file)
     
     # Sort by date descending
-    reports.sort(key=lambda x: x['date'], reverse=True)
-    
-    return reports[:limit]
+    history = sorted(reports.values(), key=lambda x: x['timestamp'], reverse=True)
+    for item in history:
+        item.pop('timestamp', None)
+
+    return history[:limit]
 
 
 def format_file_size(bytes_size):

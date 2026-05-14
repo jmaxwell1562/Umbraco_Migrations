@@ -53,8 +53,10 @@ The dashboard provides:
    - Route-based report links served from app routes such as `/reports/<filename>`
    - Report history lookup must tolerate spaces, underscores, hyphens, and case differences between the Site Name input and saved report filenames
    - Full report history per site
+   - Published report files in `reports/` preserve per-run timestamps so same-day runs do not overwrite previous history
    - Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun
    - Generated HTML audit reports use clickable legend pills as client-side filters for detail and readiness tables
+   - Last completed run metadata includes the run time, not just the date
    - Do not render a Recent Sites browsing section on the page
    - Post-run links hidden until complete
    - Automatic recovery after crash with file auto-restore
@@ -100,12 +102,12 @@ The dashboard provides:
 ### Files Generated
 
 Each audit generates:
-- `{site}_audit_report_{YYYYMMDD}.csv` - Main results
-- `{site}_failure_clusters_{YYYYMMDD}.csv` - Failure groupings
-- `{site}_release_readiness_{YYYYMMDD}.csv` - Readiness status
-- `{site}_audit_report_{YYYYMMDD}.html` - Interactive HTML report
-- `{site}_executive_view_{YYYYMMDD}.html` - Executive summary
-- `{site}_audit_report_{YYYYMMDD}.xlsx` - Excel export
+- `{site}_audit_report_{YYYYMMDD}.csv` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.csv` - Main results
+- `{site}_failure_clusters_{YYYYMMDD}.csv` or `{site}_failure_clusters_{YYYYMMDD_HHMMSS}.csv` - Failure groupings
+- `{site}_release_readiness_{YYYYMMDD}.csv` or `{site}_release_readiness_{YYYYMMDD_HHMMSS}.csv` - Readiness status
+- `{site}_audit_report_{YYYYMMDD}.html` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.html` - Interactive HTML report
+- `{site}_executive_view_{YYYYMMDD}.html` or `{site}_executive_view_{YYYYMMDD_HHMMSS}.html` - Executive summary
+- `{site}_audit_report_{YYYYMMDD}.xlsx` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.xlsx` - Excel export
 
 ### Triage Logic
 
@@ -184,7 +186,7 @@ WSU_ACCENT_COLOR = '#D4AF37'
 - Previous report links appear when history exists
 - Existing reports for the current site can be reloaded from the Site Name field without rerunning the audit
 - Site/report history matching is tolerant of spaces, underscores, hyphens, and case differences
-- All dates use YYYYMMDD format
+- Published report history may use YYYYMMDD or YYYYMMDD_HHMMSS format
 - Crash recovery auto-restores missing files
 - Reports sorted: FAIL before REVIEW, by similarity score
 

@@ -37,6 +37,7 @@ The current UI is expected to behave as follows:
 14. Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
 15. The UI includes a short duration note explaining that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
 16. Generated HTML audit reports use clickable legend pills to filter readiness and detailed rows in place.
+17. Published report files in `reports/` preserve per-run timestamps so multiple same-day runs remain available in site history.
 
 ## Critical Files
 
@@ -186,6 +187,7 @@ The audit runner ignores local HTTPS certificate errors for localhost browser ch
 7. HTML reports are served through `/reports/<filename>`.
 8. Full-site runs now have a longer dashboard-side wait window than the old 10-minute limit so they are less likely to be aborted mid-run.
 9. Generated HTML audit reports include client-side legend filters for status, readiness, and release impact.
+10. Published report artifacts in `reports/` include the run timestamp when available so latest and previous same-day runs can coexist.
 
 ## Report Files the Dashboard Expects
 

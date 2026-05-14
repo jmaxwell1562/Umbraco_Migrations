@@ -14,6 +14,7 @@ For offline archiving, see `OFFLINE_BACKUP_CHECKLIST.md`.
 - **Triage Queues**: Automated categorization of issues into Queue A (migration gaps) and Queue B (source/API issues)
 - **Generated Reports Layout**: A single-row two-column report area with a wider New Report section and a narrower Previous Report section
 - **Report History**: Track previous audits and compare the New Report against the Previous Report
+- **Per-Run History**: Published report files preserve run timestamps so multiple same-day runs stay available as latest and previous history
 - **WSU Branding**: Styled with WSU colors and logo
 
 ## Quick Start
@@ -81,6 +82,7 @@ powershell -ExecutionPolicy Bypass -File .\bootstrap-dashboard.ps1 -SkipStart
    - **Generated Reports** shown below the form in a single desktop row with two columns
    - **New Report**: latest HTML audit report, shown only after the new run completes
    - **Previous Report**: prior HTML audit report plus brief improvement stats when history exists
+   - **Last Completed Run**: New Report metadata includes the run date and time when available
    - **Fix On Test Site: Top 10 Priority** queue for the highest-priority migration gaps
 
 ### Using Existing Reports
@@ -126,12 +128,12 @@ The dashboard automatically tracks report history for the site currently being r
 
 Generated reports are stored in the `reports/` directory with the following naming convention:
 
-- **Main CSV**: `{site}_audit_report_{YYYYMMDD}.csv`
-- **Clusters CSV**: `{site}_failure_clusters_{YYYYMMDD}.csv`
-- **Readiness CSV**: `{site}_release_readiness_{YYYYMMDD}.csv`
-- **HTML Report**: `{site}_audit_report_{YYYYMMDD}.html`
-- **Executive HTML**: `{site}_executive_view_{YYYYMMDD}.html`
-- **Excel**: `{site}_audit_report_{YYYYMMDD}.xlsx`
+- **Main CSV**: `{site}_audit_report_{YYYYMMDD}.csv` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.csv`
+- **Clusters CSV**: `{site}_failure_clusters_{YYYYMMDD}.csv` or `{site}_failure_clusters_{YYYYMMDD_HHMMSS}.csv`
+- **Readiness CSV**: `{site}_release_readiness_{YYYYMMDD}.csv` or `{site}_release_readiness_{YYYYMMDD_HHMMSS}.csv`
+- **HTML Report**: `{site}_audit_report_{YYYYMMDD}.html` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.html`
+- **Executive HTML**: `{site}_executive_view_{YYYYMMDD}.html` or `{site}_executive_view_{YYYYMMDD_HHMMSS}.html`
+- **Excel**: `{site}_audit_report_{YYYYMMDD}.xlsx` or `{site}_audit_report_{YYYYMMDD_HHMMSS}.xlsx`
 
 ## CSV Report Format
 

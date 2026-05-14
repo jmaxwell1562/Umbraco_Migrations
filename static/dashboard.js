@@ -268,7 +268,7 @@ function displayResults(latest, siteData) {
         latestReportLink.href = latest.links.audit_html;
         latestReportLink.textContent = 'Open Latest Audit Report';
         latestReportLink.classList.remove('is-disabled');
-        latestReportMeta.textContent = `Completed run: ${latest.display_date}`;
+        latestReportMeta.textContent = `Last completed run: ${latest.display_date}`;
         latestReportCard.classList.remove('hidden');
     }
 
@@ -277,15 +277,16 @@ function displayResults(latest, siteData) {
         previousReportLink.textContent = 'Open Previous Audit Report';
         previousReportLink.classList.remove('is-disabled');
         const improvements = siteData.previous.improvements || [];
+        const previousRunMeta = `<p class="report-meta">Completed run: ${escapeHtml(siteData.previous.display_date || '')}</p>`;
         if (improvements.length > 0) {
-            previousReportStats.innerHTML = improvements.map(item => `
+            previousReportStats.innerHTML = previousRunMeta + improvements.map(item => `
                 <div class="comparison-stat">
                     <span class="comparison-delta">+${item.delta}</span>
                     <span>${escapeHtml(item.label)}</span>
                 </div>
             `).join('');
         } else {
-            previousReportStats.innerHTML = '<p class="placeholder">No improvement trend available against the previous run.</p>';
+            previousReportStats.innerHTML = `${previousRunMeta}<p class="placeholder">No improvement trend available against the previous run.</p>`;
         }
     }
 }

@@ -66,6 +66,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - Only show the New Report link after that report has completed
    - Previous Report shows the prior HTML audit report for the same site
    - Previous Report includes a link plus brief improvement-vs-previous stats
+   - Published report files in reports/ must preserve per-run timestamps so multiple runs on the same day remain available as latest and previous history
    - Links must be clickable from the dashboard via app routes (for example /reports/<filename>), not local-only file:// links
    - Report history lookup must tolerate spaces, underscores, hyphens, and case differences between the Site Name input and saved report filenames
    - Keep post-run links hidden until a run is complete and report history exists for the selected site
@@ -97,6 +98,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - The UI shows a short duration notice for quick vs full runs
    - New Report and Previous Report render from history in the Generated Reports section
    - Generated HTML audit reports support clickable legend-pill filtering for detail and readiness rows
+   - Last completed run metadata includes the run time, not just the date
    - Generated Reports uses a single-row two-column layout on desktop, with a 33% Previous Report column, and stacks cleanly on mobile
    - The page shows the latest audit only for the current site and does not auto-load a different site on page load
    - Existing reports for the current site can be reloaded from the Site Name field even when the report filenames use underscores or other separators
