@@ -764,6 +764,9 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
         def td(value):
                 return escape("" if value is None else str(value))
 
+        def attr_value(value):
+            return escape("" if value is None else str(value), quote=True)
+
         result_rows_html = []
         detail_rows = sorted(
             result_rows,
@@ -778,14 +781,15 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
             if section_label != current_section:
                 current_section = section_label
                 result_rows_html.append(
-                    "<tr class='section-subhead'>"
+                    f"<tr class='section-subhead' data-section='{attr_value(section_label)}'>"
                     f"<td colspan='10'>Section: {td(section_label)}</td>"
                     "</tr>"
                 )
 
             s_class = status_class.get((row.get("status") or "").strip(), "")
+            impact_value = (row.get("release_impact") or "").strip().lower()
             result_rows_html.append(
-                "<tr>"
+                f"<tr class='detail-row' data-section='{attr_value(section_label)}' data-status='{attr_value(row.get('status'))}' data-impact='{attr_value(impact_value)}'>"
                 f"<td>{td(row.get('path'))}</td>"
                 f"<td>{td(row.get('source_url'))}</td>"
                 f"<td>{td(row.get('test_url'))}</td>"
@@ -801,21 +805,22 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
 
         readiness_rows_html = []
         for row in readiness_rows:
-                r_class = readiness_class.get((row.get("readiness_label") or "").strip(), "")
-                readiness_rows_html.append(
-                        "<tr>"
-                        f"<td>{td(row.get('section'))}</td>"
-                    f"<td>{td(row.get('test_site'))}</td>"
-                        f"<td>{td(row.get('total_pages'))}</td>"
-                        f"<td>{td(row.get('blocker_count'))}</td>"
-                        f"<td>{td(row.get('non_blocker_count'))}</td>"
-                        f"<td>{td(row.get('systemic_cluster_count'))}</td>"
-                        f"<td>{td(row.get('readiness_score'))}</td>"
-                        f"<td><span class='pill {r_class}'>{td(row.get('readiness_label'))}</span></td>"
-                        f"<td>{td(row.get('go_no_go'))}</td>"
-                        f"<td>{td(row.get('summary_reason'))}</td>"
-                        "</tr>"
-                )
+            r_class = readiness_class.get((row.get("readiness_label") or "").strip(), "")
+            readiness_value = (row.get("readiness_label") or "").strip()
+            readiness_rows_html.append(
+                f"<tr class='readiness-row' data-readiness='{attr_value(readiness_value)}'>"
+                f"<td>{td(row.get('section'))}</td>"
+                f"<td>{td(row.get('test_site'))}</td>"
+                f"<td>{td(row.get('total_pages'))}</td>"
+                f"<td>{td(row.get('blocker_count'))}</td>"
+                f"<td>{td(row.get('non_blocker_count'))}</td>"
+                f"<td>{td(row.get('systemic_cluster_count'))}</td>"
+                f"<td>{td(row.get('readiness_score'))}</td>"
+                f"<td><span class='pill {r_class}'>{td(row.get('readiness_label'))}</span></td>"
+                f"<td>{td(row.get('go_no_go'))}</td>"
+                f"<td>{td(row.get('summary_reason'))}</td>"
+                "</tr>"
+            )
 
 
 
@@ -863,6 +868,12 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
         p {{ color: var(--muted); margin: 0 0 14px 0; }}
         .legend {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }}
         .pill {{ display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.2px; }}
+        .legend-button {{ border: 0; cursor: pointer; transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }}
+        .legend-button:hover {{ opacity: 0.92; transform: translateY(-1px); }}
+        .legend-button.is-active {{ box-shadow: 0 0 0 2px rgba(18, 20, 23, 0.22); }}
+        .legend-button.is-inactive {{ opacity: 0.38; }}
+        .filter-help {{ margin-top: -6px; margin-bottom: 14px; font-size: 13px; }}
+        .hidden-row {{ display: none; }}
         .status-pass {{ background: var(--pass-bg); color: var(--pass-fg); }}
         .status-soft-pass {{ background: var(--soft-bg); color: var(--soft-fg); }}
         .status-review {{ background: var(--review-bg); color: var(--review-fg); }}
@@ -887,19 +898,20 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
         <h1>{escape(safe_site_name)} Migration Audit ({escape(run_date)})</h1>
         <p>Color-coding uses high-contrast text/background combinations to support accessible readability.</p>
         <div class=\"legend\">
-            <span class=\"pill status-fail\">FAIL</span>
-            <span class=\"pill status-review\">REVIEW</span>
-            <span class=\"pill status-soft-pass\">SOFT PASS</span>
-            <span class=\"pill status-pass\">PASS</span>
-            <span class=\"pill status-redirect\">REDIRECT</span>
-            <span class=\"pill status-skip\">SKIP</span>
-            <span class=\"pill status-error\">ERROR</span>
-            <span class=\"pill readiness-go\">GO</span>
-            <span class=\"pill readiness-conditional\">CONDITIONAL GO</span>
-            <span class=\"pill readiness-no-go\">NO GO</span>
-            <span class=\"pill impact-blocker\">blocker</span>
-            <span class=\"pill impact-non-blocker\">non-blocker</span>
+            <button type=\"button\" class=\"pill legend-button status-fail\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"FAIL\">FAIL</button>
+            <button type=\"button\" class=\"pill legend-button status-review\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"REVIEW\">REVIEW</button>
+            <button type=\"button\" class=\"pill legend-button status-soft-pass\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"SOFT PASS\">SOFT PASS</button>
+            <button type=\"button\" class=\"pill legend-button status-pass\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"PASS\">PASS</button>
+            <button type=\"button\" class=\"pill legend-button status-redirect\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"REDIRECT\">REDIRECT</button>
+            <button type=\"button\" class=\"pill legend-button status-skip\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"SKIP\">SKIP</button>
+            <button type=\"button\" class=\"pill legend-button status-error\" data-filter-target=\"detail\" data-filter-key=\"status\" data-filter-value=\"ERROR\">ERROR</button>
+            <button type=\"button\" class=\"pill legend-button readiness-go\" data-filter-target=\"readiness\" data-filter-key=\"readiness\" data-filter-value=\"GO\">GO</button>
+            <button type=\"button\" class=\"pill legend-button readiness-conditional\" data-filter-target=\"readiness\" data-filter-key=\"readiness\" data-filter-value=\"CONDITIONAL GO\">CONDITIONAL GO</button>
+            <button type=\"button\" class=\"pill legend-button readiness-no-go\" data-filter-target=\"readiness\" data-filter-key=\"readiness\" data-filter-value=\"NO GO\">NO GO</button>
+            <button type=\"button\" class=\"pill legend-button impact-blocker\" data-filter-target=\"detail\" data-filter-key=\"impact\" data-filter-value=\"blocker\">blocker</button>
+            <button type=\"button\" class=\"pill legend-button impact-non-blocker\" data-filter-target=\"detail\" data-filter-key=\"impact\" data-filter-value=\"non-blocker\">non-blocker</button>
         </div>
+        <p class=\"filter-help\">Click a pill to filter the report. Click it again to clear that filter.</p>
 
         <h2>Section Release Readiness</h2>
         <div class=\"table-wrap\">
@@ -932,6 +944,55 @@ def write_accessible_html_report(base_dir, safe_site_name, run_date, result_rows
             </table>
         </div>
     </main>
+    <script>
+        (() => {{
+            const buttons = Array.from(document.querySelectorAll('.legend-button'));
+            const filterState = {{ detail: {{}}, readiness: {{}} }};
+
+            function applyFilters() {{
+                const detailRows = Array.from(document.querySelectorAll('.detail-row'));
+                const readinessRows = Array.from(document.querySelectorAll('.readiness-row'));
+
+                detailRows.forEach((row) => {{
+                    const matches = Object.entries(filterState.detail).every(([key, value]) => !value || row.dataset[key] === value);
+                    row.classList.toggle('hidden-row', !matches);
+                }});
+
+                readinessRows.forEach((row) => {{
+                    const matches = Object.entries(filterState.readiness).every(([key, value]) => !value || row.dataset[key] === value);
+                    row.classList.toggle('hidden-row', !matches);
+                }});
+
+                document.querySelectorAll('.section-subhead').forEach((row) => {{
+                    const section = row.dataset.section;
+                    const hasVisibleRows = detailRows.some((detailRow) => detailRow.dataset.section === section && !detailRow.classList.contains('hidden-row'));
+                    row.classList.toggle('hidden-row', !hasVisibleRows);
+                }});
+
+                buttons.forEach((button) => {{
+                    const target = button.dataset.filterTarget;
+                    const key = button.dataset.filterKey;
+                    const value = button.dataset.filterValue;
+                    const isActive = filterState[target][key] === value;
+                    const hasOtherActive = Object.values(filterState[target]).some((activeValue) => !!activeValue);
+                    button.classList.toggle('is-active', isActive);
+                    button.classList.toggle('is-inactive', hasOtherActive && !isActive);
+                }});
+            }}
+
+            buttons.forEach((button) => {{
+                button.addEventListener('click', () => {{
+                    const target = button.dataset.filterTarget;
+                    const key = button.dataset.filterKey;
+                    const value = button.dataset.filterValue;
+                    filterState[target][key] = filterState[target][key] === value ? '' : value;
+                    applyFilters();
+                }});
+            }});
+
+            applyFilters();
+        }})();
+    </script>
 </body>
 </html>
 """

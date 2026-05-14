@@ -72,6 +72,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - Show only the latest audit results for the site currently being run or selected in the form
    - When the Site Name field changes or loses focus, the dashboard should refresh the latest available report for that same site without requiring a rerun
    - Do not show a Recent Sites browsing section on the page
+   - Generated HTML audit reports should treat the status/readiness legend pills as clickable filters for the report tables
 
 4. Run button behavior
    - Start Audit button must behave as a status button (Ready, Running, Complete, Error)
@@ -95,6 +96,7 @@ Ensure dashboard is usable immediately and crash-safe:
    - Run button visibly changes state during lifecycle
    - The UI shows a short duration notice for quick vs full runs
    - New Report and Previous Report render from history in the Generated Reports section
+   - Generated HTML audit reports support clickable legend-pill filtering for detail and readiness rows
    - Generated Reports uses a single-row two-column layout on desktop, with a 33% Previous Report column, and stacks cleanly on mobile
    - The page shows the latest audit only for the current site and does not auto-load a different site on page load
    - Existing reports for the current site can be reloaded from the Site Name field even when the report filenames use underscores or other separators

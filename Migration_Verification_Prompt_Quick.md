@@ -40,6 +40,7 @@ Use this for a fast migration check with actionable output.
    - Show only the latest audit for the current site in the form
    - Changing or blurring the Site Name field should refresh the latest available report for that same site without requiring a rerun
    - Do not render a Recent Sites section
+   - Generated HTML audit reports should treat the status/readiness legend pills as clickable filters for the report tables
    - Start Audit button behaves as a status button: Ready, Running, Complete, Error
    - Show a short notice that quick runs usually finish in a few minutes and full-site runs can take 10 to 30+ minutes before reports appear
    - Full-site dashboard runs must allow substantially longer than the old 10-minute limit so long audits are not aborted mid-run by the Flask wrapper
@@ -56,6 +57,7 @@ Use this for a fast migration check with actionable output.
    - Test URL dropdown includes the predefined environments and accepts localhost
    - Localhost browser checks ignore local HTTPS certificate errors while still requiring the localhost app to be reachable
    - New Report and Previous Report render from history
+   - Generated HTML audit reports support clickable legend-pill filtering for detail and readiness rows
    - Existing reports for the current site can be reloaded even when report filenames use underscores or other separators
    - Generated Reports uses a single-row two-column layout on desktop and stacks on mobile
    - If no report folder or report artifacts are generated, the dashboard returns an error instead of reusing stale results

@@ -84,9 +84,10 @@ Confirm:
 4. Backup docs mention that changing or blurring the Site Name field reloads the current site's latest report without requiring a rerun.
 5. Backup docs mention that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
 6. Backup docs mention that full-site runs now have a longer dashboard-side timeout than the old 10-minute limit.
-7. `requirements.txt` includes both dashboard and audit dependencies.
-8. `bootstrap-dashboard.ps1` exists.
-9. `BUS_FACTOR_HANDOFF.md` exists.
+7. Backup docs mention that generated HTML audit reports use clickable legend pills to filter readiness and detailed rows.
+8. `requirements.txt` includes both dashboard and audit dependencies.
+9. `bootstrap-dashboard.ps1` exists.
+10. `BUS_FACTOR_HANDOFF.md` exists.
 
 ## After You Zip
 

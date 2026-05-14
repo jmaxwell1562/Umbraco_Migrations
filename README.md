@@ -10,6 +10,7 @@ For offline archiving, see `OFFLINE_BACKUP_CHECKLIST.md`.
 - **Interactive Dashboard**: User-friendly interface to configure and run migration audits
 - **Real-time Progress**: Live progress tracking during audit execution
 - **Report Generation**: Automatic HTML, CSV, and XLSX report generation
+- **Report Filters**: Generated HTML audit reports use clickable legend pills to filter detail and readiness rows
 - **Triage Queues**: Automated categorization of issues into Queue A (migration gaps) and Queue B (source/API issues)
 - **Generated Reports Layout**: A single-row two-column report area with a wider New Report section and a narrower Previous Report section
 - **Report History**: Track previous audits and compare the New Report against the Previous Report

@@ -36,6 +36,7 @@ The current UI is expected to behave as follows:
 13. Report history lookup is tolerant of spaces, underscores, hyphens, and case differences between the Site Name field and saved report filenames.
 14. Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
 15. The UI includes a short duration note explaining that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
+16. Generated HTML audit reports use clickable legend pills to filter readiness and detailed rows in place.
 
 ## Critical Files
 
@@ -184,6 +185,7 @@ The audit runner ignores local HTTPS certificate errors for localhost browser ch
 6. The dashboard reads report history from `reports/` and matches site names tolerantly across spaces, underscores, hyphens, and case.
 7. HTML reports are served through `/reports/<filename>`.
 8. Full-site runs now have a longer dashboard-side wait window than the old 10-minute limit so they are less likely to be aborted mid-run.
+9. Generated HTML audit reports include client-side legend filters for status, readiness, and release impact.
 
 ## Report Files the Dashboard Expects
 

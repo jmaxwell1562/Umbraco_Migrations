@@ -54,6 +54,7 @@ The dashboard provides:
    - Report history lookup must tolerate spaces, underscores, hyphens, and case differences between the Site Name input and saved report filenames
    - Full report history per site
    - Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun
+   - Generated HTML audit reports use clickable legend pills as client-side filters for detail and readiness tables
    - Do not render a Recent Sites browsing section on the page
    - Post-run links hidden until complete
    - Automatic recovery after crash with file auto-restore
