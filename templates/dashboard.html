@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSU Migration Verification Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v=style_version) }}">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <div class="system-bar">
+            <a class="system-link" href="https://wsu.edu/" target="_blank" rel="noreferrer">Washington State University</a>
+            <span class="system-divider"></span>
+            <span class="system-label">Administrative Services Information Systems</span>
+        </div>
+
+        <header class="wsu-header-unit wsu-color-scheme--light dashboard-header">
+            <div class="wsu-header-unit__inner header-inner">
+                <div class="wsu-header-unit__banner">
+                    <div class="wsu-logo-lockup wsu-logo-lockup--style-unit">
+                        <a href="https://wsu.edu" class="wsu-logo-lockup__icon-wrapper" target="_blank" rel="noreferrer" aria-label="Washington State University home">
+                            <svg role="img" aria-labelledby="wsu-coug-head__title" class="wsu-coug-head" enable-background="new 0 0 70.2 69.6" version="1.1" viewBox="0 0 70.2 69.6" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                                <title id="wsu-coug-head__title">WSU Cougar Head Logo</title>
+                                <path d="m42.8 69.6s3.6-1.5 5.5-7.4c1 2.3 1.5 4.8 1.3 7.3-2.3 0.1-4.5 0.2-6.8 0.1zm14.9-11.8c-10.4 1.4-12.2-20.3-12.2-20.3s3.5 11.1 10.9 10.7c7.7-0.4 5.5-12.2 5.5-12.2s7.5 20.2-4.2 21.8zm-47.7-5c-3.3 1-6.6 1.8-10 2.4 0 0 5.9-4.5 10.3-18.3l4.3 3.9-0.8 2.6c1.1 1.5 1.9 3.1 2.5 4.9 1.6-3.6 1.5-7.7-0.3-11.2l-0.5 1.6-1.7-1.5-2.8-2.7c1.2-3.6 3-7 5.3-10.1l0.4 0.4 3.3 3.8-1 1.7c1.5 1.7 2.9 3.4 4.2 5.3 0.6-3.4 0.4-6.8-0.4-10.1l-1.5 1.4-3.6-4.2c4.5-4.7 10-8.2 16.2-10.3-0.4 0.4-0.7 0.8-1 1.3-2 2.9-4.1 8.1-2.4 16.4 0.3 1.3 0.7 3.2 1.1 5.1 0.9 3.8 1.9 8.2 2.2 10.9 0.7 5.7 0.1 9.4-1.8 11.4-1.3 1.4-3.5 2-6.4 1.9v-1.4c0-2.4-0.3-4.8-0.8-7.2l-0.8-2.7-1.2 2.6c-1.9 4.1-8.6 14.1-17.2 16.1 2.6-4.2 4.1-9 4.4-14zm25.4 16.4h-0.5-0.1-0.3c-0.5 0-0.8-0.1-1.2-0.1-0.7-0.1-1.6-0.2-2.6-0.4-6.4-1.1-12.9-1.7-19.4-2 6.2-3.6 10.4-9.9 12-12.5 0.2 1.3 0.3 2.5 0.3 3.8 0 0.8 0 1.6-0.1 2.2l-0.1 1.1 1.1 0.1c0.7 0.1 1.3 0.1 1.9 0.1 3.3 0 5.7-0.8 7.3-2.5 2.4-2.5 3.1-6.7 2.3-13.1-0.4-2.9-1.4-7.4-2.3-11.1-0.5-2-0.9-3.8-1.1-5-1.5-7.6 0.3-12.3 2.1-14.8 1.3-1.9 3.2-3.4 5.5-4.2h0.1l3.3-10.8h1.1l-2.3 10.3c0.7-0.1 1.2-0.2 1.7-0.3l3-9.5h1.1l-2 9.2c2.9-0.4 6.1-0.7 10.3-1 0.8 0.4 1.4 1.1 1.8 1.9l9.8-3 0.4 1.1-9.5 3.7c0.1 0.2 0.2 0.4 0.2 0.6l10.3-1.3 0.2 1.1-10 2c0 0.2 0.1 0.4 0.1 0.6l10.4 0.3v1.1l-10.2 0.4c0 1.2-0.2 2.4-0.5 3.6 0.6 2.1 0.7 4.3 0.3 6.5-1.7-3.9-3-5.1-3-5.1-1.4-0.7-2.9-1-4.5-1-2.5 0-4.8 1.1-6.4 2.9-2.3 2.6-3.5 6-3.3 9.5 0.2 2.4 0.7 5.1 1.4 8.6 0.7 3.6 1.6 8.1 2.3 13.5 0.6 4.1-0.1 7.3-1.8 9.7-1.6 2.1-4 3.4-6.5 3.8h-0.1-0.2-0.1-2.2zm10.4-51.5c-2.1-0.1-4.2 0.4-6 1.3-1.5 1-2.5 2.7-2.6 4.5-0.1 0.6-0.1 1.2 0 1.8 0.8-1.5 2-2.8 3.3-3.9 2.4-1.5 5.1-2.3 7.9-2.4h0.9 0.3c0.4 0 0.7-0.1 0.8-0.2 0-0.1-0.1-0.3-0.4-0.4-1.3-0.5-2.7-0.8-4.2-0.7z"></path>
+                            </svg>
+                        </a>
+                        <a class="wsu-logo-lockup__title-wrapper" href="/" aria-label="Migration Verification Dashboard home">
+                            <span class="wsu-logo-lockup__subtitle">Administrative Services Information Systems</span>
+                            <span class="wsu-logo-lockup__title">Migration Verification Dashboard</span>
+                        </a>
+                    </div>
+
+                    <div class="header-status" id="headerStatus">
+                        <span class="status-indicator online"></span>
+                        <span id="statusText">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero-strip">
+            <div class="hero-content">
+                <p class="hero-kicker">MarCom-inspired dashboard shell</p>
+                <h2>Run migration audits and open the generated HTML report directly from the dashboard.</h2>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <section class="form-panel">
+                <h2>Audit Configuration</h2>
+                
+                <form id="auditForm" class="audit-form">
+                    <!-- Site Name -->
+                    <div class="form-group">
+                        <label for="siteName">
+                            Site Name
+                            <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="siteName" 
+                            name="site_name" 
+                            placeholder="e.g., about-urec"
+                            required
+                        >
+                    </div>
+
+                    <!-- Source URL -->
+                    <div class="form-group">
+                        <label for="sourceUrl">
+                            Source URL
+                            <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="url" 
+                            id="sourceUrl" 
+                            name="source_url" 
+                            placeholder="https://source.wsu.edu"
+                            required
+                        >
+                    </div>
+
+                    <!-- Test URL -->
+                    <div class="form-group">
+                        <label for="testUrl">
+                            Test URL (Required)
+                            <span class="required">*</span>
+                        </label>
+                        <select id="testUrl" name="test_url" required>
+                            <option value="" selected>Select a test environment</option>
+                            <option value="https://wdev3-testing.asis.wsu.edu/">https://wdev3-testing.asis.wsu.edu/</option>
+                            <option value="http://asis-wdev1.ad.wsu.edu/">http://asis-wdev1.ad.wsu.edu/</option>
+                            <option value="https://w2-testing.asis.wsu.edu/">w2-testing.asis.wsu.edu</option>
+                            <option value="https://w3-testing.asis.wsu.edu/">w3-testing.asis.wsu.edu</option>
+                            <option value="https://stepone.wsu.edu/">stepone.wsu.edu</option>
+                            <option value="https://dev.cub.wsu.edu/">dev.cub.wsu.edu</option>
+                            <option value="https://u7.dev.urec.wsu.edu/">https://u7.dev.urec.wsu.edu/</option>
+                            <option value="https://localhost:7019/">https://localhost:7019/</option>
+                        </select>
+                        <small>Select the migrated/test environment to validate, including localhost.</small>
+                    </div>
+
+                    <!-- Run Mode -->
+                    <div class="form-group">
+                        <label for="runMode">Run Mode</label>
+                        <select id="runMode" name="run_mode">
+                            <option value="quick">Quick (80 paths max)</option>
+                            <option value="full" selected>Full (entire site)</option>
+                        </select>
+                        <small>Quick mode for fast validation, Full for complete coverage</small>
+                    </div>
+
+                    <!-- Test Scope -->
+                    <div class="form-group">
+                        <label for="testScope">Test Scope</label>
+                        <select id="testScope" name="test_scope">
+                            <option value="single" selected>Single</option>
+                            <option value="instance">Instance</option>
+                            <option value="ask">Ask</option>
+                        </select>
+                    </div>
+
+                    <!-- Test Allowlist -->
+                    <div class="form-group">
+                        <label for="testAllowlist">Test Allowlist</label>
+                        <textarea 
+                            id="testAllowlist" 
+                            name="test_allowlist" 
+                            placeholder="Comma-separated labels or URLs"
+                            rows="3"
+                        ></textarea>
+                        <small>Comma-separated list of paths/labels to focus on</small>
+                    </div>
+
+                    <!-- Report Folder (Optional) -->
+                    <div class="form-group">
+                        <label for="reportFolder">Use Existing Report Folder</label>
+                        <input 
+                            type="text" 
+                            id="reportFolder" 
+                            name="report_folder" 
+                            placeholder="Leave empty to run new audit"
+                        >
+                        <small>Reuse previous report folder to skip audit run</small>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitBtn" class="btn btn-primary">
+                        <span id="submitText">Start Audit</span>
+                        <span id="spinner" class="spinner hidden"></span>
+                    </button>
+                    <div id="runStateBadge" class="run-state-badge state-idle">Status: Ready</div>
+                </form>
+            </section>
+
+            <section class="results-panel">
+                <!-- Progress -->
+                <div id="progressContainer" class="progress-container hidden">
+                    <h3>Running Audit...</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText">Initializing...</p>
+                </div>
+
+                <!-- Report Links -->
+                <div id="reportLinksContainer" class="report-links hidden">
+                    <h3>Generated Reports</h3>
+                    <div class="report-link-group">
+                        <div id="latestReportCard" class="report-link-card report-link-card-primary hidden">
+                            <p class="report-link-label">New Report</p>
+                            <a id="latestReportLink" href="#" class="report-link-action" target="_blank">Open Latest Audit Report</a>
+                            <p id="latestReportMeta" class="report-meta"></p>
+                        </div>
+                        <div id="previousReportCard" class="report-link-card report-link-card-secondary hidden">
+                            <p class="report-link-label">Previous Report</p>
+                            <a id="previousReportLink" href="#" class="report-link-action" target="_blank">Open Previous Audit Report</a>
+                            <div id="previousReportStats" class="comparison-stats"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Queue A -->
+                <div id="queueAContainer" class="queue-container hidden">
+                    <h3>Fix On Test Site: Top 10 Priority</h3>
+                    <div id="queueAList" class="queue-list">
+                        <p class="placeholder">No high-priority test-site fixes found.</p>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>No Results Yet</h3>
+                    <p>Configure the audit settings and click "Start Audit" to begin verification.</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden"></div>
+
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='dashboard.js', v=script_version) }}"></script>
+</body>
+</html>

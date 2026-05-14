@@ -1,0 +1,647 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    <section id="activeAuditsBanner" class="active-audits-banner" style="display: none;">
+        <p class="active-audits-title">Active Audits Running</p>
+        <p id="activeAuditsText" class="active-audits-text"></p>
+    </section>
+
+    <section class="preset-section" aria-label="Quick site presets">
+        <h2>Quick Site Presets</h2>
+        <p class="preset-help">Click a preset to auto-fill site name and source URL. Then choose your target test environment and launch.</p>
+        <div class="preset-grid">
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('Dining', 'https://dining.wsu.edu')">Dining</button>
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('CougarCard', 'https://cougarcard.wsu.edu')">CougarCard</button>
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('Housing', 'https://housing.wsu.edu')">Housing</button>
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('StudentAffairs', 'https://studentaffairs.wsu.edu')">StudentAffairs</button>
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('StudentInvolvement', 'https://studentinvolvement.wsu.edu')">StudentInvolvement</button>
+            <button type="button" class="btn btn-secondary preset-btn" onclick="applySitePreset('UREC', 'https://urec.wsu.edu')">UREC</button>
+        </div>
+    </section>
+
+    <!-- Configuration Panel -->
+    <section class="config-section">
+        <h2>New Audit Configuration</h2>
+        <form id="auditForm" class="audit-form">
+            <div class="form-group">
+                <label for="siteName">Site Name *</label>
+                <input 
+                    type="text" 
+                    id="siteName" 
+                    name="site_name" 
+                    placeholder="e.g., UREC, StudentAffairs, Dining"
+                    required
+                >
+                <small>Identifier for this audit</small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sourceUrl">Source URL *</label>
+                    <input 
+                        type="url" 
+                        id="sourceUrl" 
+                        name="source_url"
+                        placeholder="https://example.wsu.edu"
+                        required
+                    >
+                    <small>Current production site</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="testUrlPreset">Test Source Environment *</label>
+                    <select id="testUrlPreset" name="test_url_preset" onchange="applyTestUrlPreset(this.value)">
+                        <option value="">-- Select test environment --</option>
+                        <optgroup label="Local Development">
+                            <option value="https://localhost:44385">localhost:44385 (Umbraco)</option>
+                        </optgroup>
+                        <optgroup label="WSU Dev/Test Environments">
+                            <option value="https://wdev3-testing.asis.wsu.edu">wdev3-testing.asis.wsu.edu</option>
+                            <option value="https://wdev2-testing.asis.wsu.edu">wdev2-testing.asis.wsu.edu</option>
+                            <option value="https://w3-testing.asis.wsu.edu">w3-testing.asis.wsu.edu</option>
+                            <option value="https://w2-testing.asis.wsu.edu">w2-testing.asis.wsu.edu</option>
+                            <option value="http://asis-wdev1.ad.wsu.edu">asis-wdev1.ad.wsu.edu</option>
+                            <option value="https://dev.cub.wsu.edu">dev.cub.wsu.edu</option>
+                            <option value="https://dev.housing.wsu.edu">dev.housing.wsu.edu</option>
+                            <option value="https://dev.studentaffairs.wsu.edu">dev.studentaffairs.wsu.edu</option>
+                            <option value="https://dev.studentinvolvement.wsu.edu">dev.studentinvolvement.wsu.edu</option>
+                            <option value="https://dev.dining.wsu.edu">dev.dining.wsu.edu</option>
+                            <option value="https://stepone.testing.wsu.edu">stepone.testing.wsu.edu</option>
+                        </optgroup>
+                        <optgroup label="Production Test">
+                            <option value="https://stepone.wsu.edu">stepone.wsu.edu</option>
+                        </optgroup>
+                        <option value="custom">Custom URL...</option>
+                    </select>
+                    <small>Select a test host, then set the full Test URL.</small>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="testUrl">Test URL *</label>
+                    <input 
+                        type="url" 
+                        id="testUrl" 
+                        name="test_url"
+                        placeholder="Or paste custom test URL here"
+                        required
+                    >
+                    <small>Umbraco migration target (localhost OK for self-signed certs)</small>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="scope">Scope *</label>
+                    <select id="scope" name="scope">
+                        <option value="single">Single Test Site (recommended)</option>
+                        <option value="instance">Include Sibling Instance Sites</option>
+                    </select>
+                    <small>single: audit your selected test URL | instance: discover and audit sibling sites on the same host</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxPaths">Max Paths (optional)</label>
+                    <input 
+                        type="number" 
+                        id="maxPaths" 
+                        name="max_paths"
+                        min="1"
+                        value="25"
+                        placeholder="Leave empty for no limit"
+                    >
+                    <small>Quick mode default: 25 paths. Clear this for a full audit.</small>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="testAllowlist">Test Allowlist (optional)</label>
+                    <input
+                        type="text"
+                        id="testAllowlist"
+                        name="test_allowlist"
+                        placeholder="cougarcard,handbook or full URLs"
+                    >
+                    <small>Used with instance scope to include specific sibling sites.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="testAllowlistFile">Test Allowlist File (optional)</label>
+                    <input
+                        type="text"
+                        id="testAllowlistFile"
+                        name="test_allowlist_file"
+                        placeholder="test_sites_allowlist_example.txt"
+                    >
+                    <small>One site label or URL per line, supports # comments.</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <span class="btn-label">Launch Audit</span>
+                    <span class="btn-spinner hidden"></span>
+                </button>
+                <button type="reset" class="btn btn-secondary">Clear Form</button>
+            </div>
+        </form>
+    </section>
+
+    <section id="reportLinksSection" class="report-links-section" aria-label="Post-run report links" hidden>
+        <h2>Post-Run Report Links</h2>
+        <p class="preset-help">These links update from audit history for the selected site name.</p>
+        <div class="report-links-grid">
+            <div class="report-link-card">
+                <p class="report-link-label">Latest report</p>
+                <a id="latestReportLink" class="report-link disabled" href="#" aria-disabled="true">No report yet</a>
+            </div>
+            <div class="report-link-card">
+                <p class="report-link-label">Previous report</p>
+                <a id="previousReportLink" class="report-link disabled" href="#" aria-disabled="true">No previous report yet</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Active Audit Panel -->
+    <section id="activeAuditSection" class="active-audit-section hidden">
+        <h3>Audit in Progress</h3>
+        <div class="audit-progress">
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p id="auditStatus">Starting audit...</p>
+            <p id="auditMessage"></p>
+            <a id="openReportBtn" class="btn btn-small hidden" target="_blank" rel="noopener noreferrer" hidden>Open Latest Report</a>
+        </div>
+    </section>
+
+    <!-- Audit History Panel -->
+    <section class="history-section">
+        <h2>Audit History</h2>
+        <div id="auditHistory" class="audit-history">
+            <p class="loading">Loading audit history...</p>
+        </div>
+    </section>
+</div>
+
+<!-- Audit Detail Modal -->
+<div id="auditModal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeAuditModal()"></div>
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeAuditModal()">×</button>
+        <div id="auditDetail"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const auditForm = document.getElementById('auditForm');
+const submitBtn = document.getElementById('submitBtn');
+const auditHistory = document.getElementById('auditHistory');
+const activeSection = document.getElementById('activeAuditSection');
+const auditStatus = document.getElementById('auditStatus');
+const auditMessage = document.getElementById('auditMessage');
+const openReportBtn = document.getElementById('openReportBtn');
+const siteNameInput = document.getElementById('siteName');
+const activeAuditsBanner = document.getElementById('activeAuditsBanner');
+const activeAuditsText = document.getElementById('activeAuditsText');
+const reportLinksSection = document.getElementById('reportLinksSection');
+const latestReportLink = document.getElementById('latestReportLink');
+const previousReportLink = document.getElementById('previousReportLink');
+let currentAuditSite = null;
+
+function hideReportButton() {
+    openReportBtn.hidden = true;
+    openReportBtn.classList.add('hidden');
+    openReportBtn.style.display = 'none';
+    openReportBtn.removeAttribute('href');
+}
+
+function showReportButton(reportUrl) {
+    openReportBtn.href = reportUrl;
+    openReportBtn.hidden = false;
+    openReportBtn.classList.remove('hidden');
+    openReportBtn.style.display = 'inline-flex';
+}
+
+hideReportButton();
+
+function normalizeSiteName(value) {
+    return (value || '').trim().toLowerCase();
+}
+
+function buildDeltaBadges(currentSummary = {}, previousSummary = {}) {
+    return Object.entries(currentSummary)
+        .filter(([status]) => status !== 'error')
+        .map(([status, count]) => {
+            const previousCount = Number(previousSummary[status] || 0);
+            const delta = Number(count || 0) - previousCount;
+            return { status, delta };
+        })
+        .filter(item => item.delta !== 0)
+        .map(({ status, delta }) => {
+            const deltaPrefix = delta > 0 ? '+' : '';
+            const cssClass = delta > 0 ? 'delta-up' : 'delta-down';
+            return `<span class="delta-badge ${cssClass}">${status} ${deltaPrefix}${delta}</span>`;
+        })
+        .join('');
+}
+
+async function getLatestReportUrlForSite(siteName) {
+    if (!siteName) {
+        return null;
+    }
+
+    const response = await fetch('/api/audits');
+    const audits = await response.json();
+    const normalizedSite = normalizeSiteName(siteName);
+    const latestWithReport = audits.find(audit =>
+        normalizeSiteName(audit.site) === normalizedSite && audit.has_report && audit.report_path
+    );
+
+    if (!latestWithReport) {
+        return null;
+    }
+
+    return `/report/${encodeURI(latestWithReport.report_path)}`;
+}
+
+async function waitForLatestReport(siteName, maxAttempts = 20, delayMs = 1000) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const reportUrl = await getLatestReportUrlForSite(siteName);
+        if (reportUrl) {
+            return reportUrl;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+
+    return null;
+}
+
+async function fetchActiveAudits() {
+    const response = await fetch('/api/active-audits');
+    if (!response.ok) {
+        return [];
+    }
+    return response.json();
+}
+
+function setReportLinkState(linkElement, reportPath, emptyText) {
+    if (!reportPath) {
+        linkElement.href = '#';
+        linkElement.textContent = emptyText;
+        linkElement.classList.add('disabled');
+        linkElement.setAttribute('aria-disabled', 'true');
+        return;
+    }
+
+    linkElement.href = `/report/${encodeURI(reportPath)}`;
+    linkElement.textContent = 'Open report';
+    linkElement.classList.remove('disabled');
+    linkElement.removeAttribute('aria-disabled');
+}
+
+function setReportLinksVisibility(isVisible) {
+    reportLinksSection.hidden = !isVisible;
+}
+
+async function refreshReportLinks(siteName) {
+    const trimmedSite = (siteName || '').trim();
+    if (!trimmedSite) {
+        setReportLinksVisibility(false);
+        setReportLinkState(latestReportLink, null, 'No report yet');
+        setReportLinkState(previousReportLink, null, 'No previous report yet');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/report-history/${encodeURIComponent(trimmedSite)}`);
+        if (!response.ok) {
+            setReportLinksVisibility(false);
+            setReportLinkState(latestReportLink, null, 'No report yet');
+            setReportLinkState(previousReportLink, null, 'No previous report yet');
+            return;
+        }
+
+        const history = await response.json();
+        const hasCompletedRun = Boolean(history.latest || history.previous);
+        setReportLinksVisibility(hasCompletedRun);
+        setReportLinkState(latestReportLink, history.latest, 'No report yet');
+        setReportLinkState(previousReportLink, history.previous, 'No previous report yet');
+    } catch (error) {
+        setReportLinksVisibility(false);
+        setReportLinkState(latestReportLink, null, 'No report yet');
+        setReportLinkState(previousReportLink, null, 'No previous report yet');
+    }
+}
+
+async function refreshActiveAuditsBanner() {
+    try {
+        const audits = await fetchActiveAudits();
+        if (!audits.length) {
+            activeAuditsBanner.style.display = 'none';
+            activeAuditsText.textContent = '';
+            return;
+        }
+
+        activeAuditsBanner.style.display = 'block';
+        activeAuditsText.textContent = audits
+            .map(audit => `${audit.site || 'Unknown Site'} (started ${audit.started_at || 'recently'})`)
+            .join(' | ');
+    } catch (error) {
+        activeAuditsBanner.style.display = 'none';
+    }
+}
+
+// Form submission
+auditForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        site_name: document.getElementById('siteName').value,
+        source_url: document.getElementById('sourceUrl').value,
+        test_url: document.getElementById('testUrl').value,
+        scope: document.getElementById('scope').value,
+        max_paths: document.getElementById('maxPaths').value,
+        test_allowlist: document.getElementById('testAllowlist').value,
+        test_allowlist_file: document.getElementById('testAllowlistFile').value
+    };
+
+    const normalizedSite = normalizeSiteName(formData.site_name);
+    let runningAudits = [];
+    try {
+        runningAudits = await fetchActiveAudits();
+    } catch (error) {
+        runningAudits = [];
+    }
+    const sameSiteRunning = runningAudits.find(audit => normalizeSiteName(audit.site) === normalizedSite);
+    if (sameSiteRunning) {
+        showNotification(`An audit for ${formData.site_name} is already running.`, 'warning');
+        await refreshActiveAuditsBanner();
+        return;
+    }
+
+    if (runningAudits.length > 0) {
+        const proceed = window.confirm('Another audit is currently running. Launching another may slow both runs. Continue?');
+        if (!proceed) {
+            await refreshActiveAuditsBanner();
+            return;
+        }
+        formData.force_parallel = true;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.querySelector('.btn-label').classList.add('hidden');
+    submitBtn.querySelector('.btn-spinner').classList.remove('hidden');
+
+    try {
+        const response = await fetch('/api/launch-audit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            showNotification('Audit launched!', 'success');
+            currentAuditSite = formData.site_name;
+            setReportLinksVisibility(false);
+            hideReportButton();
+            activeSection.classList.remove('hidden');
+            monitorAudit(result.audit_id);
+            loadAuditHistory(currentAuditSite);
+            refreshReportLinks(currentAuditSite);
+            await refreshActiveAuditsBanner();
+        } else {
+            if (response.status === 409 && result.code === 'duplicate_site_running') {
+                showNotification(result.error || 'Audit already running for this site.', 'warning');
+            } else if (response.status === 409 && result.code === 'parallel_running') {
+                showNotification(result.error || 'Another audit is already running.', 'warning');
+            } else {
+                showNotification(result.error || 'Failed to launch audit', 'error');
+            }
+            await refreshActiveAuditsBanner();
+        }
+    } catch (error) {
+        showNotification('Error: ' + error.message, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-label').classList.remove('hidden');
+        submitBtn.querySelector('.btn-spinner').classList.add('hidden');
+    }
+});
+
+// Monitor audit progress
+async function monitorAudit(auditId) {
+    let checkCount = 0;
+    const maxChecks = 600; // 10 minutes with 1-second intervals
+
+    const checkInterval = setInterval(async () => {
+        checkCount++;
+        
+        try {
+            const response = await fetch(`/api/audit-status/${auditId}`);
+            const data = await response.json();
+            
+            if (data.status === 'completed') {
+                auditStatus.textContent = '✓ Audit completed successfully!';
+                auditMessage.textContent = 'Generating Audit Report';
+                clearInterval(checkInterval);
+
+                await loadAuditHistory(currentAuditSite);
+                const reportUrl = await waitForLatestReport(currentAuditSite);
+
+                if (reportUrl) {
+                    showReportButton(reportUrl);
+                    auditMessage.textContent = 'Report is ready. Use the button below to open it.';
+                } else {
+                    hideReportButton();
+                    auditMessage.textContent = 'Generating Audit Report';
+                }
+
+                await refreshReportLinks(currentAuditSite);
+
+                await refreshActiveAuditsBanner();
+            } else if (data.status === 'failed') {
+                auditStatus.textContent = '✗ Audit failed';
+                auditMessage.textContent = data.error || 'Unknown error';
+                hideReportButton();
+                clearInterval(checkInterval);
+                await refreshActiveAuditsBanner();
+            } else {
+                auditStatus.textContent = 'Running...';
+                hideReportButton();
+            }
+        } catch (error) {
+            auditStatus.textContent = 'Error checking status: ' + error.message;
+            hideReportButton();
+        }
+        
+        if (checkCount >= maxChecks) {
+            clearInterval(checkInterval);
+            auditStatus.textContent = 'Audit still running (check later)';
+            hideReportButton();
+        }
+    }, 1000);
+}
+
+// Apply preset test URL
+function applyTestUrlPreset(value) {
+    if (value && value !== 'custom') {
+        document.getElementById('testUrl').value = value;
+        document.getElementById('testUrlPreset').value = value;
+    }
+}
+
+function applySitePreset(siteName, sourceUrl) {
+    document.getElementById('siteName').value = siteName;
+    document.getElementById('sourceUrl').value = sourceUrl;
+    currentAuditSite = siteName;
+    loadAuditHistory(siteName);
+    refreshReportLinks(siteName);
+
+    showNotification(`Preset loaded for ${siteName}. Select a Test URL and launch.`, 'info');
+}
+
+function inferSiteFromSourceUrl() {
+    const sourceValue = document.getElementById('sourceUrl').value.trim();
+    if (!sourceValue) {
+        return;
+    }
+
+    try {
+        const hostname = new URL(sourceValue).hostname;
+        const parts = hostname.split('.');
+        if (parts.length >= 3) {
+            const label = parts[0];
+            const currentSite = document.getElementById('siteName').value.trim();
+            if (!currentSite) {
+                document.getElementById('siteName').value = label.charAt(0).toUpperCase() + label.slice(1);
+            }
+        }
+    } catch (error) {
+        // Ignore invalid URL typing while user is still entering text.
+    }
+}
+
+// Load audit history
+async function loadAuditHistory(siteFilter = null) {
+    try {
+        const response = await fetch('/api/audits');
+        let audits = await response.json();
+        const hasSiteFilter = Boolean(siteFilter && normalizeSiteName(siteFilter));
+
+        if (hasSiteFilter) {
+            const normalizedFilter = normalizeSiteName(siteFilter);
+            audits = audits.filter(audit => normalizeSiteName(audit.site) === normalizedFilter);
+        }
+
+        // Keep only one card by default, but keep two when we need a same-site delta.
+        if (audits.length > 1) {
+            audits = audits.slice(0, hasSiteFilter ? 2 : 1);
+        }
+
+        if (audits.length === 0) {
+            auditHistory.innerHTML = hasSiteFilter
+                ? `<p class="empty-state">No prior audit found for ${siteFilter} yet.</p>`
+                : '<p class="empty-state">No audits yet. Run your first audit above!</p>';
+            return;
+        }
+
+        const latestAudit = audits[0];
+        const previousAudit = hasSiteFilter ? audits[1] : null;
+        const deltaMarkup = previousAudit
+            ? buildDeltaBadges(latestAudit.summary || {}, previousAudit.summary || {})
+            : '';
+
+        auditHistory.innerHTML = `
+            <div class="audit-card">
+                <div class="audit-header">
+                    <h3>${latestAudit.site}</h3>
+                    <span class="audit-date">${latestAudit.datetime}</span>
+                </div>
+                <div class="audit-summary">
+                    ${Object.entries(latestAudit.summary || {})
+                        .filter(([k, v]) => v > 0 && k !== 'error')
+                        .map(([status, count]) => `<span class="badge badge-${status.toLowerCase().replace(' ', '-')}">${status}: ${count}</span>`)
+                        .join('')}
+                </div>
+                ${deltaMarkup ? `<div class="audit-delta"><strong>Change vs previous run:</strong> ${deltaMarkup}</div>` : ''}
+                <div class="audit-actions">
+                    ${latestAudit.has_report && latestAudit.report_path ? `<a href="/report/${encodeURI(latestAudit.report_path)}" target="_blank" class="btn btn-small">View Report</a>` : ''}
+                    ${latestAudit.has_detail && latestAudit.detail_path ? `<a href="/download/${encodeURI(latestAudit.detail_path)}" class="btn btn-small">Download CSV</a>` : ''}
+                    <button class="btn btn-small btn-secondary" onclick="viewAuditDetails('${latestAudit.folder}')">Details</button>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        auditHistory.innerHTML = `<p class="error">Failed to load history: ${error.message}</p>`;
+    }
+}
+
+siteNameInput.addEventListener('input', () => {
+    const typedSite = siteNameInput.value.trim();
+    currentAuditSite = typedSite || null;
+    loadAuditHistory(currentAuditSite);
+    refreshReportLinks(currentAuditSite);
+});
+
+document.getElementById('sourceUrl').addEventListener('blur', inferSiteFromSourceUrl);
+
+// View audit details
+async function viewAuditDetails(folder) {
+    try {
+        const response = await fetch(`/api/audit/${folder}`);
+        const audit = await response.json();
+
+        const detailHtml = `
+            <h3>${folder}</h3>
+            <div class="detail-summary">
+                <h4>Summary</h4>
+                <ul>
+                    ${Object.entries(audit.summary || {})
+                        .filter(([k, v]) => k !== 'error')
+                        .map(([status, count]) => `<li><strong>${status}:</strong> ${count}</li>`)
+                        .join('')}
+                </ul>
+            </div>
+            <div class="detail-files">
+                <h4>Available Files</h4>
+                <ul>
+                    ${Object.entries(audit.files || {})
+                        .map(([name, path]) => `
+                            <li>
+                                <a href="/download/${path}" download>${name.toUpperCase()}</a>
+                            </li>
+                        `).join('')}
+                </ul>
+            </div>
+        `;
+
+        document.getElementById('auditDetail').innerHTML = detailHtml;
+        document.getElementById('auditModal').classList.remove('hidden');
+    } catch (error) {
+        showNotification('Failed to load details', 'error');
+    }
+}
+
+function closeAuditModal() {
+    document.getElementById('auditModal').classList.add('hidden');
+}
+
+// Load history on page load
+loadAuditHistory();
+refreshActiveAuditsBanner();
+refreshReportLinks();
+
+// Refresh history every 30 seconds
+setInterval(() => loadAuditHistory(currentAuditSite), 30000);
+setInterval(refreshActiveAuditsBanner, 10000);
+</script>
+{% endblock %}

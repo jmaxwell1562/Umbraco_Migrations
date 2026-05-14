@@ -1,0 +1,6 @@
+# One site label or full URL per line
+cougarcard
+about
+
+# URL form also works
+https://w2-testing.asis.wsu.edu/contact-us/

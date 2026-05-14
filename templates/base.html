@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Umbraco Migration Audit Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="system-bar" aria-label="WSU System Bar">
+            <a class="system-link" href="https://wsu.edu/" target="_blank" rel="noopener noreferrer">Washington State University</a>
+        </div>
+        <header class="header">
+            <div class="header-content brand-lockup">
+                <a class="brand-icon-link" href="https://wsu.edu/" target="_blank" rel="noopener noreferrer" aria-label="Washington State University">
+                    <img class="brand-icon" src="https://repo.wsu.edu/favicon/icon.svg" alt="WSU Cougar Head Logo">
+                </a>
+                <div class="brand-text">
+                    <p class="brand-subtitle">Administrative Services Information Systems</p>
+                    <h1>Umbraco Migration Audit Dashboard</h1>
+                    <p class="subtitle">Configure and manage content audits</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 WSU Migration Team. All audits run locally.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
