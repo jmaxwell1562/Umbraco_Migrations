@@ -1,23 +1,18 @@
 # WSU Migration Verification Dashboard - Copilot Instructions
 
-## Dashboard Status: CREATED ✓
+## Dashboard Status: BUILD OR REFRESH AUTOMATICALLY
 
-The interactive audit dashboard has been successfully created and is ready to use.
+The interactive audit dashboard should be created or refreshed automatically as part of the prompt workflow, then started locally before audit or triage work continues.
 
-## Quick Start
+## Prompt Intent
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+One prompt should be enough to:
+1. scaffold or refresh the dashboard,
+2. make it runnable in the current workspace,
+3. start it locally and return the working dashboard URL in the final output,
+4. run or triage the audit results.
 
-### 2. Start the Dashboard
-```bash
-python app.py
-```
-
-### 3. Open Dashboard
-Navigate to `http://localhost:5000`
+The expected single-prompt result is the current dashboard behavior, not a partial scaffold. That includes the explicit subdomain-to-subpath control, `New Report` and `Previous Report`, HTML and executive preview links, an openable Excel workbook link, no separate CSV button in the dashboard UI, section-based HTML report output, and a plain-English file-lock message when an Excel workbook is open.
 
 ## Dashboard Features
 
@@ -29,10 +24,15 @@ The dashboard provides:
    - Source URL textbox
    - Test URL dropdown (required)
    - Test URL dropdown options: https://wdev3-testing.asis.wsu.edu/, http://asis-wdev1.ad.wsu.edu/, w2-testing.asis.wsu.edu, w3-testing.asis.wsu.edu, stepone.wsu.edu, dev.cub.wsu.edu, https://u7.dev.urec.wsu.edu/, https://localhost:7019/
+   - Test URL dropdown includes a Custom URL option for environments outside the preset list
+   - Explicit subdomain question/control for source-subdomain to test-subpath migrations
+   - When enabled, preserve the test URL path prefix for all audited pages instead of flattening to host root
    - Test URL dropdown must support localhost runs
    - Localhost audits require a local app to be listening on port 7019
    - Optional scope and max paths controls
    - Optional test allowlist textarea
+   - Batch Site Mappings File input for one-pass multi-site instance audits
+   - The external mappings file is the source of truth for multi-site batches; do not require users to maintain the list in the form
    - Reuse existing report folder option
 
 2. **Interactive Results Display**
@@ -40,8 +40,11 @@ The dashboard provides:
    - Start Audit button behaves as a status button: Ready, Running, Complete, Error
    - A short duration notice explains that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear
    - Preflight-stopped audits surface an error instead of implying stale results are new
+   - A run is only successful when fresh HTML, CSV, and XLSX artifacts were generated and published for the selected site
+   - Path discovery must use sitemap-backed discovery when available, including non-default sitemap endpoints such as /sitemap, with source-link crawling fallback instead of reducing audits to the root path only
    - Prioritized Queue A only, limited to top 10 fix-on-test priorities
    - Show only the latest audit for the current site in the form
+   - When a Batch Site Mappings File is supplied, run each mapping as a separate audit in one pass and surface per-site report links instead of comparing one source site against sibling test paths
 
 3. **Report Management**
    - Generated Reports section positioned below configuration
@@ -49,13 +52,17 @@ The dashboard provides:
    - Use the exact UI section names: New Report and Previous Report
    - Previous Report occupies about 33% width on desktop, with New Report taking the remaining width
    - New Report shows the latest generated HTML audit report and only appears after the new report completes
-   - Previous Report shows the prior HTML audit report with brief improvement-vs-previous stats
+   - New Report also exposes the executive preview link when the executive HTML artifact exists for that run
+   - New Report also exposes an Excel workbook link that users can open directly; do not surface a separate CSV button in the dashboard UI
+   - If a report file is locked by Excel or another app, the UI should tell the user to close or rename the open workbook before rerunning the audit
+   - Previous Report shows the prior HTML audit report with brief improvement-vs-previous stats and exposes the prior executive preview when available
    - Route-based report links served from app routes such as `/reports/<filename>`
    - Report history lookup must tolerate spaces, underscores, hyphens, and case differences between the Site Name input and saved report filenames
    - Full report history per site
    - Published report files in `reports/` preserve per-run timestamps so same-day runs do not overwrite previous history
    - Changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun
    - Generated HTML audit reports use clickable legend pills as client-side filters for detail and readiness tables
+   - Generated HTML audit reports must preserve section-based triage with a Section Release Readiness table and a Detailed Rows table
    - Last completed run metadata includes the run time, not just the date
    - Do not render a Recent Sites browsing section on the page
    - Post-run links hidden until complete
@@ -64,6 +71,8 @@ The dashboard provides:
 4. **WSU Branding**
    - WSU Crimson (#981E32) and Navy (#003C71) colors
    - WSU top-left cougar logo/header lockup
+   - When the user points to a specific WSU unit site for visual direction, align the dashboard shell and header treatment to that site where practical
+   - Keep the hero focused on dashboard function; avoid extra marketing or promo-card sections unless the user explicitly asks for them
    - WSU header-unit / logo-lockup pattern when provided
    - Traffic Cop / MarCom-inspired shell where practical
    - Preserve provided SVG/logo markup instead of replacing it with a placeholder badge
@@ -124,6 +133,7 @@ Each audit generates:
 - GO: Section ready for release
 - CONDITIONAL GO: Ready with conditions
 - NO GO: Blockers prevent release
+- Release readiness CSV rows use: section, test_site, total_pages, blocker_count, non_blocker_count, systemic_cluster_count, readiness_score, readiness_label, go_no_go, summary_reason
 
 ## Configuration
 
@@ -157,19 +167,22 @@ WSU_ACCENT_COLOR = '#D4AF37'
 ### For Agents Refreshing the Dashboard
 
 1. Actually build or refresh the dashboard automatically before audit or triage work; do not stop at describing requirements.
-2. Update existing dashboard files in place instead of creating duplicate variants.
-3. When dashboard behavior, layout, controls, labels, or report presentation changes, update Migration_Verification_Prompt.md and Migration_Verification_Prompt_Quick.md in the same change.
-4. Keep README.md, BUS_FACTOR_HANDOFF.md, OFFLINE_BACKUP_CHECKLIST.md, and bootstrap-dashboard.ps1 aligned with the current setup and recovery workflow.
-5. Preserve the WSU header-unit/logo-lockup markup and cougar logo when provided.
-6. Ensure latest and previous HTML reports are clickable through app routes rather than local-only `file://` links.
-7. Do not auto-load a different site's report into the page on startup; keep the page focused on the current site in the form.
-8. Ensure report history lookup works even when the Site Name input and saved filenames differ by spaces, underscores, hyphens, or case.
-9. Ensure changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
-10. Ensure long full-site runs are not aborted by the old 10-minute dashboard timeout while they are still producing output.
-11. If the audit stops before generating a report folder or report artifacts, return an error instead of silently leaving stale report data in place.
-12. Ensure refreshed pages pick up new JS/CSS automatically and are not blocked by stale asset cache.
-13. Keep the dashboard result surface intentionally narrow: no summary counts, release readiness, or Queue B panels on the main page.
-14. Keep the Generated Reports layout intentional: a single-row two-column desktop layout using the labels New Report and Previous Report, with a narrower Previous Report column that collapses to one column on mobile.
+2. If no runnable dashboard host exists, scaffold the smallest supported host in the current workspace and make it reachable by a local URL.
+3. Restore or install required dependencies, build the dashboard host, and start it locally before continuing.
+4. Update existing dashboard files in place instead of creating duplicate variants.
+5. When dashboard behavior, layout, controls, labels, startup flow, or report presentation changes, update Migration_Verification_Prompt.md and Migration_Verification_Prompt_Quick.md in the same change.
+6. Keep README.md, BUS_FACTOR_HANDOFF.md, OFFLINE_BACKUP_CHECKLIST.md, and bootstrap-dashboard.ps1 aligned with the current setup and recovery workflow.
+7. Preserve the WSU header-unit/logo-lockup markup and cougar logo when provided.
+8. Ensure latest and previous HTML reports are clickable through app routes rather than local-only `file://` links.
+9. Do not auto-load a different site's report into the page on startup; keep the page focused on the current site in the form.
+10. Ensure report history lookup works even when the Site Name input and saved filenames differ by spaces, underscores, hyphens, or case.
+11. Ensure changing or blurring the Site Name field refreshes the latest available report for that same site without requiring a rerun.
+12. Ensure long full-site runs are not aborted by the old 10-minute dashboard timeout while they are still producing output.
+13. If the audit stops before generating a report folder or report artifacts, return an error instead of silently leaving stale report data in place.
+14. Ensure refreshed pages pick up new JS/CSS automatically and are not blocked by stale asset cache.
+15. Disable caching for the dashboard page and report-history refresh responses so changing the Site Name field shows current state immediately.
+16. Keep the dashboard result surface intentionally narrow: no summary counts, release readiness, or Queue B panels on the main page.
+17. Keep the Generated Reports layout intentional: a single-row two-column desktop layout using the labels New Report and Previous Report, with a narrower Previous Report column that collapses to one column on mobile.
 
 ### For Administrators
 

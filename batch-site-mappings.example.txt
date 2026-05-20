@@ -1,0 +1,6 @@
+# Site Name | Source URL | Test Path or Full Test URL
+# Blank lines and lines that start with # are ignored.
+# The third column can be either a test path under the shared Test URL or a full test URL.
+
+CougarCard | https://cougarcard.wsu.edu | cougarcard
+Student Employee Handbook | https://dining.wsu.edu/employeehandbook/ | student-employee-handbook

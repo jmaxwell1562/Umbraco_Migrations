@@ -38,6 +38,11 @@ The current UI is expected to behave as follows:
 15. The UI includes a short duration note explaining that quick runs usually finish in a few minutes while full-site runs can take 10 to 30+ minutes before reports appear.
 16. Generated HTML audit reports use clickable legend pills to filter readiness and detailed rows in place.
 17. Published report files in `reports/` preserve per-run timestamps so multiple same-day runs remain available in site history.
+18. The dashboard includes an explicit subdomain-to-subpath control so a source subdomain can stay rooted under a test URL path such as `/chs`.
+19. The Generated Reports UI exposes HTML, executive preview, and an openable Excel workbook link, and does not show a separate CSV button.
+20. If a report workbook is open and locks a file, the dashboard shows a plain-English message telling the user to close or rename the open Excel file before rerunning the audit.
+21. U17-style multi-site batches are driven by an external Batch Site Mappings File, not an in-form list builder.
+22. The external mappings file should use one line per site in the format `Site Name | Source URL | Test Path or Full Test URL`.
 
 ## Critical Files
 
@@ -188,6 +193,7 @@ The audit runner ignores local HTTPS certificate errors for localhost browser ch
 8. Full-site runs now have a longer dashboard-side wait window than the old 10-minute limit so they are less likely to be aborted mid-run.
 9. Generated HTML audit reports include client-side legend filters for status, readiness, and release impact.
 10. Published report artifacts in `reports/` include the run timestamp when available so latest and previous same-day runs can coexist.
+11. If the source site is a subdomain but the test site is rooted under a path, the dashboard can preserve that test path prefix for all joined URLs when the subdomain control is enabled.
 
 ## Report Files the Dashboard Expects
 

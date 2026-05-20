@@ -15,6 +15,9 @@ For offline archiving, see `OFFLINE_BACKUP_CHECKLIST.md`.
 - **Generated Reports Layout**: A single-row two-column report area with a wider New Report section and a narrower Previous Report section
 - **Report History**: Track previous audits and compare the New Report against the Previous Report
 - **Per-Run History**: Published report files preserve run timestamps so multiple same-day runs stay available as latest and previous history
+- **Subdomain-To-Subpath Support**: Explicit control for cases where a source subdomain maps into a test-site path such as `/chs`
+- **Single-Prompt Ready**: The prompt is expected to produce the full current dashboard result surface in one pass, not a partial scaffold
+- **External Batch Mapping Files**: U17-style multi-site batches should be driven by a reusable external mappings file instead of rebuilding the site list in the form
 - **WSU Branding**: Styled with WSU colors and logo
 
 ## Quick Start
@@ -68,6 +71,7 @@ powershell -ExecutionPolicy Bypass -File .\bootstrap-dashboard.ps1 -SkipStart
    - **Site Name**: Identifier for the site (e.g., `about-urec`)
    - **Source URL**: Original site URL
    - **Test URL** *(required)*: Choose from the predefined test environments dropdown
+   - **Source Is A Subdomain Mapped Under The Test URL Path**: Enable when comparing a source subdomain against a test path such as `https://dev.studentaffairs.wsu.edu/chs`
    - **Localhost Option**: `https://localhost:7019/` is available in the dropdown for local test runs
    - **Localhost Requirement**: A local app must actually be running and listening on port `7019` before a localhost audit can succeed
    - **Run Mode**: `quick` (80 paths max) or `full` (entire site)
@@ -80,10 +84,12 @@ powershell -ExecutionPolicy Bypass -File .\bootstrap-dashboard.ps1 -SkipStart
 
 3. **View Results:**
    - **Generated Reports** shown below the form in a single desktop row with two columns
-   - **New Report**: latest HTML audit report, shown only after the new run completes
-   - **Previous Report**: prior HTML audit report plus brief improvement stats when history exists
+   - **New Report**: latest HTML audit report plus executive preview and an openable Excel workbook link when generated, shown only after the new run completes
+   - **Previous Report**: prior HTML audit report plus prior executive preview and brief improvement stats when history exists
    - **Last Completed Run**: New Report metadata includes the run date and time when available
    - **Fix On Test Site: Top 10 Priority** queue for the highest-priority migration gaps
+   - **Locked Workbook Guidance**: if an Excel workbook is open and locks a report file, the dashboard should tell the user to close or rename the open workbook before rerunning the audit
+   - **Batch Runs**: provide a Batch Site Mappings File path to run multiple site audits in one pass; the mappings file should contain one line per site in the format `Site Name | Source URL | Test Path or Full Test URL`
 
 ### Using Existing Reports
 
@@ -153,9 +159,16 @@ Generated reports are stored in the `reports/` directory with the following nami
 
 | Column | Description |
 |--------|-------------|
-| section | Site section |
-| status | GO, CONDITIONAL GO, or NO GO |
-| reason | Status reason |
+| section | Site section or overall |
+| test_site | Test site label |
+| total_pages | Total audited pages in that section |
+| blocker_count | FAIL and ERROR count |
+| non_blocker_count | REVIEW count |
+| systemic_cluster_count | Distinct systemic failure clusters |
+| readiness_score | Weighted readiness score |
+| readiness_label | Ready, Needs Review, or Blocked |
+| go_no_go | GO, CONDITIONAL GO, or NO GO |
+| summary_reason | Section summary of blockers/non-blockers/systemic issues |
 
 ## Queue Classification
 
